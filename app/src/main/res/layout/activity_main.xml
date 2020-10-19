@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="Home"
+        app:titleTextColor="#FFFFFF" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tv_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/tv_videoView"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_shape_btn"
+                android:gravity="center"
+                android:onClick="useBaseVideoView"
+                android:text="BaseVideoView"
+                android:textAllCaps="false"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="14sp" />
+
+
+            <Button
+                android:id="@+id/tv_local_video"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_shape_btn"
+                android:gravity="center"
+                android:onClick="recyclerviewListPlay"
+                android:text="Media Player in RecyclerView"
+                android:textAllCaps="false"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="14sp" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_shape_btn"
+                android:gravity="center"
+                android:onClick="shareAnimationVideos"
+                android:text="Shared Element Transition Animation"
+                android:textAllCaps="false"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/tv_pager_play"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_shape_btn"
+                android:gravity="center"
+                android:onClick="viewPagerPlay"
+                android:text="Media Player in ViewPager"
+                android:textAllCaps="false"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/tv_window_videoView"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_shape_btn"
+                android:gravity="center"
+                android:onClick="useWindowVideoView"
+                android:text="WindowVideoView"
+                android:textAllCaps="false"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/tv_window_play"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_shape_btn"
+                android:gravity="center"
+                android:onClick="useFloatWindow"
+                android:text="FloatWindow"
+                android:textAllCaps="false"
+                android:textColor="@color/buttonTextColor"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

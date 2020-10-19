@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <org.succlz123.hohoplayer.widget.videoview.VideoView
+        android:id="@+id/baseVideoView"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="#000000" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/settingRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
