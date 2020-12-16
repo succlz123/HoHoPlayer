@@ -35,7 +35,7 @@ interface IBridge {
 
     fun getAdapter(key: String): IAdapter?
 
-    fun getDataCenter(): DataCenter
+    fun getDataCenter(): DataCenter?
 
     fun clear()
 
@@ -166,9 +166,7 @@ interface IBridge {
         }
     }
 
-    private fun filterImplOnTouchEventListener(
-            onLoopListener: (adapter: IAdapter) -> Unit
-    ) {
+    private fun filterImplOnTouchEventListener(onLoopListener: (adapter: IAdapter) -> Unit) {
         this.forEach(object : OnAdapterFilter {
             override fun filter(adapter: IAdapter?): Boolean {
                 return adapter is OnTouchGestureListener

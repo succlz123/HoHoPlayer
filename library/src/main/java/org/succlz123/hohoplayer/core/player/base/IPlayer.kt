@@ -76,3 +76,12 @@ interface IPlayer {
 
     fun destroy()
 }
+
+fun IPlayer.isInPlaybackState(): Boolean {
+    val state = getState()
+    return state != IPlayer.STATE_END
+            && state != IPlayer.STATE_ERROR
+            && state != IPlayer.STATE_IDLE
+            && state != IPlayer.STATE_INITIALIZED
+            && state != IPlayer.STATE_STOPPED
+}

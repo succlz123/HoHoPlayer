@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import org.succlz123.hohoplayer.app.R
 import org.succlz123.hohoplayer.core.adapter.BaseCoverAdapter
+import org.succlz123.hohoplayer.core.player.base.isInPlaybackState
 import org.succlz123.hohoplayer.core.player.listener.OnPlayerEventListener
 import org.succlz123.hohoplayer.support.message.HoHoMessage
 
@@ -22,21 +23,12 @@ class LoadingCoverAdapter(context: Context) : BaseCoverAdapter(context) {
 
     override fun onCoverAttachedToWindow() {
         super.onCoverAttachedToWindow()
-//        videoViewState?.let {
-//            if (isInPlaybackState(it)) {
-//                setLoadingState(it.isBuffering())
-//            }
-//        }
+        hostBridge?.getPlayer()?.let {
+            if (it.isInPlaybackState()) {
+                setLoadingState(!it.isPlaying())
+            }
+        }
     }
-
-//    private fun isInPlaybackState(IVideoViewState: IVideoViewState): Boolean {
-//        val state = IVideoViewState.getState()
-//        return state != IPlayer.STATE_END
-//                && state != IPlayer.STATE_ERROR
-//                && state != IPlayer.STATE_IDLE
-//                && state != IPlayer.STATE_INITIALIZED
-//                && state != IPlayer.STATE_STOPPED
-//    }
 
     override fun onPlayerEvent(message: HoHoMessage) {
         when (message.what) {
