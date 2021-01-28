@@ -72,7 +72,7 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
 
     private fun initPlayAfterResume() {
         if (!hasStart) {
-            val dataSource = DataSource("https://dev-confirmed.adidas.com.cn/media/video/6cca1235-32e8-4859-a7aa-e032d8163d20.mp4")
+            val dataSource = DataSource(DataProvider.VIDEO_URL_07)
             dataSource.title = "音乐和艺术如何改变世界"
             baseVideoView.setDataSource(dataSource)
             baseVideoView.start()
@@ -126,7 +126,7 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
     }
 
     private fun replay() {
-        baseVideoView.setDataSource(DataSource(DataProvider.VIDEO_URL_09))
+        baseVideoView.setDataSource(DataSource(DataProvider.VIDEO_URL_07))
         baseVideoView.start()
     }
 

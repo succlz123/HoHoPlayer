@@ -1,8 +1,9 @@
 package org.succlz123.hohoplayer.app
 
 import android.app.Application
-import org.succlz123.hohoplayer.core.player.ext.ExoMediaPlayer
 import org.succlz123.hohoplayer.config.PlayerConfig
+import org.succlz123.hohoplayer.core.player.ext.ExoMediaPlayer
+import org.succlz123.hohoplayer.core.player.ext.IjkPlayer
 import org.succlz123.hohoplayer.support.log.PlayerLog
 
 class MainApplication : Application() {
@@ -19,7 +20,8 @@ class MainApplication : Application() {
 
         PlayerLog.LOG_OPEN = true
         PlayerConfig.init(this, true)
-        ExoMediaPlayer.addThis(true)
+        IjkPlayer.addThis(true)
+        ExoMediaPlayer.addThis(false)
         PlayerConfig.isUseDefaultNetworkEventProducer = true
     }
 }
