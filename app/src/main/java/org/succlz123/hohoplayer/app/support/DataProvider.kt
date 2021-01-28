@@ -41,10 +41,6 @@ object DataProvider {
         get() {
             val videoList: MutableList<VideoItem> = ArrayList()
             videoList.add(VideoItem(
-                    "ad",
-                    "https://dev-confirmed.adidas.com.cn/media/video/6cca1235-32e8-4859-a7aa-e032d8163d20.mp4",
-                    "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3746149156,3846202622&fm=26&gp=0.jpg"))
-            videoList.add(VideoItem(
                     "坚持与放弃",
                     "https://mov.bn.netease.com/open-movie/nos/mp4/2015/08/27/SB13F5AGJ_sd.mp4",
                     "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3746149156,3846202622&fm=26&gp=0.jpg"))
