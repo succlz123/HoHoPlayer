@@ -1,1 +1,1 @@
-﻿A simple wrapper library of Android System Media Player and ExoPlayer.
+﻿A simple wrapper library of Android System Media Player, ExoPlayer and IjkPlayer.
