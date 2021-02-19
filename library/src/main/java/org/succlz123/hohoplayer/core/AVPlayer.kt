@@ -3,7 +3,6 @@ package org.succlz123.hohoplayer.core
 import android.view.Surface
 import android.view.SurfaceHolder
 import org.succlz123.hohoplayer.config.PlayerConfig
-import org.succlz123.hohoplayer.config.PlayerConfig.SYS_MEDIA_PLAYER
 import org.succlz123.hohoplayer.config.PlayerConfig.getDecoder
 import org.succlz123.hohoplayer.config.PlayerLoader
 import org.succlz123.hohoplayer.core.player.base.BasePlayer
@@ -152,6 +151,10 @@ class AVPlayer(decoderName: String = PlayerConfig.getDefaultDecoderName()) : IPl
         addListener()
         this.dataSource = dataSource
         basePlayer.setDataSource(dataSource)
+    }
+
+    override fun getDataSource(): DataSource? {
+        return basePlayer.getDataSource()
     }
 
     override fun start() {

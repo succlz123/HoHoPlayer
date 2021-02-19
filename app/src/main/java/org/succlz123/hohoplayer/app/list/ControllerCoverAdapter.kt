@@ -7,9 +7,14 @@ import org.succlz123.hohoplayer.app.R
 import org.succlz123.hohoplayer.core.adapter.BaseCoverAdapter
 import org.succlz123.hohoplayer.core.player.listener.OnPlayerEventListener
 import org.succlz123.hohoplayer.support.message.HoHoMessage
+import org.succlz123.hohoplayer.ui.list.PlayerEvent
 
-class ControllerCoverAdapter(context: Context, private var isMute: Boolean) : BaseCoverAdapter(context) {
-    private lateinit var muteView: ImageView
+class ControllerCoverAdapter(
+        context: Context,
+        private var isMute: Boolean,
+        private val l: View.OnClickListener? = null
+) : BaseCoverAdapter(context) {
+    private var muteView: ImageView? = null
     private var isPlaying: Boolean = false
 
     override val key: String
@@ -26,10 +31,11 @@ class ControllerCoverAdapter(context: Context, private var isMute: Boolean) : Ba
     override fun onCoverAttachedToWindow() {
         super.onCoverAttachedToWindow()
         val view = getView()
+        view.setOnClickListener(l)
         muteView = view.findViewById(R.id.mute)
         setMuteImage()
         sendMuteEvent()
-        muteView.setOnClickListener {
+        muteView?.setOnClickListener {
             isMute = !isMute
             setMuteImage()
             sendMuteEvent()
@@ -38,17 +44,17 @@ class ControllerCoverAdapter(context: Context, private var isMute: Boolean) : Ba
 
     fun handleMuteImage(boolean: Boolean) {
         if (boolean) {
-            muteView.visibility = View.VISIBLE
+            muteView?.visibility = View.VISIBLE
         } else {
-            muteView.visibility = View.INVISIBLE
+            muteView?.visibility = View.INVISIBLE
         }
     }
 
     private fun setMuteImage() {
         if (isMute) {
-            muteView.setBackgroundResource(R.drawable.ic_vec_mute)
+            muteView?.setBackgroundResource(R.drawable.ic_vec_mute)
         } else {
-            muteView.setBackgroundResource(R.drawable.ic_vec_unmute)
+            muteView?.setBackgroundResource(R.drawable.ic_vec_unmute)
         }
     }
 

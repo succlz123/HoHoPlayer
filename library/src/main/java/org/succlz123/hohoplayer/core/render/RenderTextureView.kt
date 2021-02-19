@@ -7,10 +7,11 @@ import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
 import android.view.View
-import org.succlz123.hohoplayer.support.log.PlayerLog.d
 import org.succlz123.hohoplayer.core.player.base.IPlayer
+import org.succlz123.hohoplayer.core.render.IRender.Companion.RENDER_TAG
 import org.succlz123.hohoplayer.core.render.IRender.IRenderCallback
 import org.succlz123.hohoplayer.core.render.IRender.IRenderHolder
+import org.succlz123.hohoplayer.support.log.PlayerLog.d
 import java.lang.ref.WeakReference
 
 /**
@@ -47,6 +48,7 @@ class RenderTextureView(context: Context, attrs: AttributeSet? = null) :
 
     init {
         setSurfaceTextureListener(surfaceTextureListener)
+        tag = RENDER_TAG
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

@@ -33,7 +33,7 @@ class SysMediaPlayer : BasePlayer() {
 
     private var bandWidth: Long = 0
 
-    private var currentDataSource: DataSource? = null
+    private var curDataSource: DataSource? = null
 
     override fun setDataSource(dataSource: DataSource) {
         try {
@@ -51,7 +51,7 @@ class SysMediaPlayer : BasePlayer() {
             mediaPlayer.setOnBufferingUpdateListener(bufferingUpdateListener)
             updateStatus(IPlayer.STATE_INITIALIZED)
 
-            currentDataSource = dataSource
+            curDataSource = dataSource
             val applicationContext = PlayerContext.context()
             val data = dataSource.data
             val uri = dataSource.uri
@@ -97,6 +97,10 @@ class SysMediaPlayer : BasePlayer() {
             updateStatus(IPlayer.STATE_ERROR)
             targetState = IPlayer.STATE_ERROR
         }
+    }
+
+    override fun getDataSource(): DataSource? {
+        return curDataSource
     }
 
     override fun option(message: HoHoMessage) {
@@ -352,7 +356,7 @@ class SysMediaPlayer : BasePlayer() {
     }
 
     private fun attachTimedTextSource() {
-        val timedTextSource = currentDataSource?.timedTextSource ?: return
+        val timedTextSource = curDataSource?.timedTextSource ?: return
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 mediaPlayer.addTimedTextSource(timedTextSource.path, timedTextSource.mimeType)

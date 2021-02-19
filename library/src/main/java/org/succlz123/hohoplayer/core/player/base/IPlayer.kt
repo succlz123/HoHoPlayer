@@ -23,6 +23,8 @@ interface IPlayer {
 
     fun setDataSource(dataSource: DataSource)
 
+    fun getDataSource(): DataSource?
+
     fun setDisplay(surfaceHolder: SurfaceHolder?)
 
     fun setSurface(surface: Surface?)

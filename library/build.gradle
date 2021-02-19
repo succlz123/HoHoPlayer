@@ -37,8 +37,6 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.10"
-
     api 'com.google.android.exoplayer:exoplayer-core:2.12.3'
     api 'com.google.android.exoplayer:exoplayer-dash:2.12.3'
     api 'com.google.android.exoplayer:exoplayer-hls:2.12.3'
@@ -46,4 +44,6 @@ dependencies {
     api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
 
     api 'com.danikula:videocache:2.7.1'
+
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
 }

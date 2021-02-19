@@ -5,9 +5,11 @@ import android.util.AttributeSet
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
+import org.succlz123.hohoplayer.R
 import org.succlz123.hohoplayer.support.log.PlayerLog.d
 import org.succlz123.hohoplayer.support.log.PlayerLog.e
 import org.succlz123.hohoplayer.core.player.base.IPlayer
+import org.succlz123.hohoplayer.core.render.IRender.Companion.RENDER_TAG
 import org.succlz123.hohoplayer.core.render.IRender.IRenderCallback
 import org.succlz123.hohoplayer.core.render.IRender.IRenderHolder
 import java.lang.ref.WeakReference
@@ -125,5 +127,6 @@ class RenderSurfaceView @JvmOverloads constructor(context: Context?, attrs: Attr
     init {
         mRenderMeasure = RenderMeasure()
         holder.addCallback(InternalSurfaceHolderCallback())
+        tag = RENDER_TAG
     }
 }

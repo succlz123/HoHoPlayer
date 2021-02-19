@@ -48,6 +48,8 @@ class IjkPlayer : BasePlayer() {
 
     private val optionArrays = arrayListOf<IjkOption>()
 
+    private var curDataSource: DataSource? = null
+
     override fun option(message: HoHoMessage) {
         val category = message.what
         val key = message.argString ?: return
@@ -82,7 +84,12 @@ class IjkPlayer : BasePlayer() {
     }
 
     override fun setDataSource(dataSource: DataSource) {
+        curDataSource = dataSource
         openVideo(dataSource)
+    }
+
+    override fun getDataSource(): DataSource? {
+        return curDataSource
     }
 
     private fun openVideo(dataSource: DataSource) {

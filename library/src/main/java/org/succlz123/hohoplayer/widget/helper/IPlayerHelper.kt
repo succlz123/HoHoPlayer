@@ -1,9 +1,9 @@
 package org.succlz123.hohoplayer.widget.helper
 
 import android.view.ViewGroup
-import org.succlz123.hohoplayer.core.adapter.event.OnAdapterEventListener
 import org.succlz123.hohoplayer.core.adapter.bridge.IBridge
 import org.succlz123.hohoplayer.core.adapter.event.BaseAdapterEventHandler
+import org.succlz123.hohoplayer.core.adapter.event.OnAdapterEventListener
 import org.succlz123.hohoplayer.core.player.listener.OnErrorEventListener
 import org.succlz123.hohoplayer.core.player.listener.OnPlayerEventListener
 import org.succlz123.hohoplayer.core.render.AspectRatio
@@ -34,7 +34,7 @@ interface IPlayerHelper {
     fun setVolume(left: Float, right: Float)
     fun setSpeed(speed: Float)
     fun setLooping(looping: Boolean)
-    fun play(updateRender: Boolean = false)
+    fun play(updateRender: Boolean = false, pos: Int = 0)
     fun rePlay(msc: Int)
     fun pause()
     fun resume()

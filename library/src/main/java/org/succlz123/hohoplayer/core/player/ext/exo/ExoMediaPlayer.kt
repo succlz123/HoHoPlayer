@@ -50,11 +50,13 @@ class ExoMediaPlayer : BasePlayer() {
 
     private lateinit var internalPlayer: SimpleExoPlayer
 
-    private var mVideoWidth = 0
+    private var curDataSource: DataSource? = null
 
-    private var mVideoHeight = 0
+    private var videoWidth = 0
 
-    private var mStartPos = -1L
+    private var videoHeight = 0
+
+    private var startPos = -1L
 
     private var isPreparing = true
 
@@ -95,9 +97,9 @@ class ExoMediaPlayer : BasePlayer() {
                                         ?: -1), "videoHeight" to (format?.height ?: -1)
                         )))
 
-                        if (mStartPos > 0 && internalPlayer.duration > 0) {
-                            internalPlayer.seekTo(mStartPos)
-                            mStartPos = -1
+                        if (startPos > 0 && internalPlayer.duration > 0) {
+                            internalPlayer.seekTo(startPos)
+                            startPos = -1
                         }
                     }
                 }
@@ -206,6 +208,7 @@ class ExoMediaPlayer : BasePlayer() {
     override fun setDataSource(dataSource: DataSource) {
         updateStatus(IPlayer.STATE_INITIALIZED)
         internalPlayer.addVideoListener(videoListener)
+        curDataSource = dataSource
         val data = dataSource.data
         val uri = dataSource.uri
         val assetsPath = dataSource.assetsPath
@@ -300,6 +303,10 @@ class ExoMediaPlayer : BasePlayer() {
         submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_DATA_SOURCE_SET, argObj = dataSource))
     }
 
+    override fun getDataSource(): DataSource? {
+        return curDataSource
+    }
+
     private fun getMediaSource(
             uri: Uri,
             dataSourceFactory: com.google.android.exoplayer2.upstream.DataSource.Factory
@@ -377,11 +384,11 @@ class ExoMediaPlayer : BasePlayer() {
     }
 
     override fun getVideoWidth(): Int {
-        return mVideoWidth
+        return videoWidth
     }
 
     override fun getVideoHeight(): Int {
-        return mVideoHeight
+        return videoHeight
     }
 
     override fun start() {
@@ -393,7 +400,7 @@ class ExoMediaPlayer : BasePlayer() {
             start()
             seekTo(msc)
         } else {
-            mStartPos = msc.toLong()
+            startPos = msc.toLong()
             start()
         }
     }
@@ -462,10 +469,10 @@ class ExoMediaPlayer : BasePlayer() {
                 width: Int, height: Int,
                 unappliedRotationDegrees: Int, pixelWidthHeightRatio: Float
         ) {
-            mVideoWidth = width
-            mVideoHeight = height
+            videoWidth = width
+            videoHeight = height
             submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_SIZE_CHANGE, extra = hashMapOf(
-                    "videoWidth" to mVideoWidth, "videoHeight" to mVideoHeight,
+                    "videoWidth" to videoWidth, "videoHeight" to videoHeight,
                     "videoSarNum" to 0, "videoSarDen" to 0 // ijk ->
             )))
         }

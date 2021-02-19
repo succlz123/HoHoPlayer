@@ -1,4 +1,4 @@
-package org.succlz123.hohoplayer.app.list
+package org.succlz123.hohoplayer.app
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,8 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import org.succlz123.hohoplayer.app.R
 import org.succlz123.hohoplayer.app.support.VideoItem
+import org.succlz123.hohoplayer.ui.list.ListPlayer
+import org.succlz123.hohoplayer.ui.list.ListPlayerAdapter
+import org.succlz123.hohoplayer.ui.list.ListPlayerViewHolder
 
 class ListAdapter(val listPlayer: ListPlayer, val items: List<VideoItem>) : RecyclerView.Adapter<VideoItemHolder>(), ListPlayerAdapter {
 

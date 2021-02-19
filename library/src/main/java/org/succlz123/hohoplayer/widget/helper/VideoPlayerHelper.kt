@@ -208,14 +208,14 @@ class VideoPlayerHelper(private var context: Context) : IPlayerHelper {
         }
     }
 
-    override fun play(updateRender: Boolean) {
+    override fun play(updateRender: Boolean, pos: Int) {
         if (updateRender) {
             releaseRender()
             updateRender()
         }
         dataSource?.let {
             avPlayer.setDataSource(it)
-            avPlayer.start()
+            avPlayer.start(pos)
         }
     }
 

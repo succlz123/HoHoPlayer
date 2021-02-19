@@ -6,8 +6,7 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_list.*
-import org.succlz123.hohoplayer.app.list.ListAdapter
-import org.succlz123.hohoplayer.app.list.ListPlayer
+import org.succlz123.hohoplayer.ui.list.ListPlayer
 import org.succlz123.hohoplayer.app.support.DataProvider
 import org.succlz123.hohoplayer.app.support.OrientationSensor
 

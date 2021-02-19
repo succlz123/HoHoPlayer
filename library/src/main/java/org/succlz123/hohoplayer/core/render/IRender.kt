@@ -9,6 +9,7 @@ import org.succlz123.hohoplayer.core.player.base.IPlayer
 interface IRender {
 
     companion object {
+        const val RENDER_TAG = "RENDER_VIEW"
         const val RENDER_TYPE_TEXTURE_VIEW = 0
         const val RENDER_TYPE_SURFACE_VIEW = 1
     }
