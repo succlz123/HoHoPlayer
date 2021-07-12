@@ -205,6 +205,10 @@ class AVPlayer(decoderName: String = PlayerConfig.getDefaultDecoderName()) : IPl
         return basePlayer.isPlaying()
     }
 
+    override fun isBuffering(): Boolean {
+        return basePlayer.isBuffering()
+    }
+
     override fun getCurrentPosition(): Int {
         return basePlayer.getCurrentPosition()
     }

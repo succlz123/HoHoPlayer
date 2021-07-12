@@ -89,7 +89,6 @@ class ControllerCoverAdapter(context: Context) : BaseCoverAdapter(context), OnTi
 
     override fun onAdapterBind() {
         super.onAdapterBind()
-        controllerSeekBar?.setOnSeekBarChangeListener(onSeekBarChangeListener)
         getDataCenter().registerOnValueListener(onValueListener)
     }
 
@@ -107,6 +106,7 @@ class ControllerCoverAdapter(context: Context) : BaseCoverAdapter(context), OnTi
         switchScreen = view.findViewById(R.id.cover_player_controller_image_view_switch_screen)
         controllerSeekBar = view.findViewById(R.id.cover_player_controller_seek_bar)
         bottomSeekBar = view.findViewById(R.id.cover_bottom_seek_bar)
+        controllerSeekBar?.setOnSeekBarChangeListener(onSeekBarChangeListener)
 
         backIcon?.setOnClickListener {
             sendOne2ManyAdapterEvent(HoHoMessage.obtain(what = AppPlayerData.Event.EVENT_CODE_REQUEST_BACK))

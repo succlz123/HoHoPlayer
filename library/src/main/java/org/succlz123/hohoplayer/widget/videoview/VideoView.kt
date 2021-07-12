@@ -62,7 +62,6 @@ open class VideoView @JvmOverloads constructor(
     private var videoSarDen = 0
     private var videoRotation = 0
     private var iRenderHolder: IRenderHolder? = null
-    private var isBuffering = false
 
     var videoViewEventHandler: VideoViewAdapterEventHandler? = null
 
@@ -96,12 +95,6 @@ open class VideoView @JvmOverloads constructor(
                             render?.updateVideoSize(videoWidth, videoHeight)
                         }
                         bindRenderHolder(iRenderHolder)
-                    }
-                    OnPlayerEventListener.PLAYER_EVENT_ON_BUFFERING_START -> {
-                        isBuffering = true
-                    }
-                    OnPlayerEventListener.PLAYER_EVENT_ON_BUFFERING_END -> {
-                        isBuffering = false
                     }
                 }
                 onPlayerEventListener?.onPlayerEvent(message)

@@ -37,6 +37,8 @@ interface IPlayer {
 
     fun isPlaying(): Boolean
 
+    fun isBuffering(): Boolean
+
     fun getBufferPercentage(): Int
 
     fun getCurrentPosition(): Int

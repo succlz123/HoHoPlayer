@@ -50,6 +50,8 @@ class IjkPlayer : BasePlayer() {
 
     private var curDataSource: DataSource? = null
 
+    private var isBuffering = false
+
     override fun option(message: HoHoMessage) {
         val category = message.what
         val key = message.argString ?: return
@@ -126,7 +128,12 @@ class IjkPlayer : BasePlayer() {
                 }
             } else if (uri != null) {
                 if (uri.scheme == ContentResolver.SCHEME_ANDROID_RESOURCE) {
-                    internalPlayer.setDataSource(RawDataSourceProvider.create(applicationContext, uri))
+                    internalPlayer.setDataSource(
+                        RawDataSourceProvider.create(
+                            applicationContext,
+                            uri
+                        )
+                    )
                 } else {
                     if (headers == null) {
                         internalPlayer.setDataSource(applicationContext, uri)
@@ -138,7 +145,12 @@ class IjkPlayer : BasePlayer() {
                 PlayerLog.e(TAG, "ijkplayer not support assets play, you can use raw play.")
             } else if (rawId > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 val rawUri = buildRawPath(applicationContext.packageName, rawId)
-                internalPlayer.setDataSource(RawDataSourceProvider.create(applicationContext, rawUri))
+                internalPlayer.setDataSource(
+                    RawDataSourceProvider.create(
+                        applicationContext,
+                        rawUri
+                    )
+                )
             }
             internalPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             internalPlayer.setScreenOnWhilePlaying(true)
@@ -146,7 +158,12 @@ class IjkPlayer : BasePlayer() {
 
             // set looping indicator for IjkMediaPlayer
             internalPlayer.isLooping = isLooping()
-            submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_DATA_SOURCE_SET, argObj = dataSource))
+            submitPlayerEvent(
+                HoHoMessage.obtain(
+                    what = OnPlayerEventListener.PLAYER_EVENT_ON_DATA_SOURCE_SET,
+                    argObj = dataSource
+                )
+            )
         } catch (e: Exception) {
             PlayerLog.e(TAG, e.toString())
             updateStatus(IPlayer.STATE_ERROR)
@@ -158,8 +175,9 @@ class IjkPlayer : BasePlayer() {
     override fun start() {
         val state = getState()
         if (state == IPlayer.STATE_PREPARED
-                || state == IPlayer.STATE_PAUSED
-                || state == IPlayer.STATE_PLAYBACK_COMPLETE) {
+            || state == IPlayer.STATE_PAUSED
+            || state == IPlayer.STATE_PLAYBACK_COMPLETE
+        ) {
             internalPlayer.start()
             updateStatus(IPlayer.STATE_STARTED)
             submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_START))
@@ -184,11 +202,12 @@ class IjkPlayer : BasePlayer() {
         try {
             val state = getState()
             if (state != IPlayer.STATE_END
-                    && state != IPlayer.STATE_ERROR
-                    && state != IPlayer.STATE_IDLE
-                    && state != IPlayer.STATE_INITIALIZED
-                    && state != IPlayer.STATE_PAUSED
-                    && state != IPlayer.STATE_STOPPED) {
+                && state != IPlayer.STATE_ERROR
+                && state != IPlayer.STATE_IDLE
+                && state != IPlayer.STATE_INITIALIZED
+                && state != IPlayer.STATE_PAUSED
+                && state != IPlayer.STATE_STOPPED
+            ) {
                 internalPlayer.pause()
                 updateStatus(IPlayer.STATE_PAUSED)
                 submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_PAUSE))
@@ -215,20 +234,28 @@ class IjkPlayer : BasePlayer() {
     override fun seekTo(msc: Int) {
         val state = getState()
         if (state == IPlayer.STATE_PREPARED
-                || state == IPlayer.STATE_STARTED
-                || state == IPlayer.STATE_PAUSED
-                || state == IPlayer.STATE_PLAYBACK_COMPLETE) {
+            || state == IPlayer.STATE_STARTED
+            || state == IPlayer.STATE_PAUSED
+            || state == IPlayer.STATE_PLAYBACK_COMPLETE
+        ) {
             internalPlayer.seekTo(msc.toLong())
-            submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_SEEK_TO, argInt = msc))
+            submitPlayerEvent(
+                HoHoMessage.obtain(
+                    what = OnPlayerEventListener.PLAYER_EVENT_ON_SEEK_TO,
+                    argInt = msc
+                )
+            )
         }
     }
 
     override fun stop() {
+        isBuffering = false
         val state = getState()
         if (state == IPlayer.STATE_PREPARED
-                || state == IPlayer.STATE_STARTED
-                || state == IPlayer.STATE_PAUSED
-                || state == IPlayer.STATE_PLAYBACK_COMPLETE) {
+            || state == IPlayer.STATE_STARTED
+            || state == IPlayer.STATE_PAUSED
+            || state == IPlayer.STATE_PLAYBACK_COMPLETE
+        ) {
             internalPlayer.stop()
             updateStatus(IPlayer.STATE_STOPPED)
             submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_STOP))
@@ -251,12 +278,17 @@ class IjkPlayer : BasePlayer() {
         }
     }
 
+    override fun isBuffering(): Boolean {
+        return isBuffering
+    }
+
     override fun getCurrentPosition(): Int {
         val state = getState()
         return if (state == IPlayer.STATE_PREPARED
-                || state == IPlayer.STATE_STARTED
-                || state == IPlayer.STATE_PAUSED
-                || state == IPlayer.STATE_PLAYBACK_COMPLETE) {
+            || state == IPlayer.STATE_STARTED
+            || state == IPlayer.STATE_PAUSED
+            || state == IPlayer.STATE_PLAYBACK_COMPLETE
+        ) {
             internalPlayer.currentPosition.toInt()
         } else {
             0
@@ -266,8 +298,9 @@ class IjkPlayer : BasePlayer() {
     override fun getDuration(): Int {
         val state = getState()
         return if (state != IPlayer.STATE_ERROR
-                && state != IPlayer.STATE_INITIALIZED
-                && state != IPlayer.STATE_IDLE) {
+            && state != IPlayer.STATE_INITIALIZED
+            && state != IPlayer.STATE_IDLE
+        ) {
             internalPlayer.duration.toInt()
         } else {
             0
@@ -283,6 +316,7 @@ class IjkPlayer : BasePlayer() {
     }
 
     override fun destroy() {
+        isBuffering = false
         updateStatus(IPlayer.STATE_END)
         resetListener()
         internalPlayer.release()
@@ -294,10 +328,14 @@ class IjkPlayer : BasePlayer() {
             internalPlayer.setDisplay(surfaceHolder)
             submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_SURFACE_HOLDER_UPDATE))
         } catch (e: Exception) {
-            submitErrorEvent(HoHoMessage.obtain(what = OnErrorEventListener.ERROR_EVENT_RENDER, extra = hashMapOf(
-                    "errorMessage" to e.message,
-                    "causeMessage" to e.cause?.message.orEmpty()
-            )))
+            submitErrorEvent(
+                HoHoMessage.obtain(
+                    what = OnErrorEventListener.ERROR_EVENT_RENDER, extra = hashMapOf(
+                        "errorMessage" to e.message,
+                        "causeMessage" to e.cause?.message.orEmpty()
+                    )
+                )
+            )
         }
     }
 
@@ -306,10 +344,14 @@ class IjkPlayer : BasePlayer() {
             internalPlayer.setSurface(surface)
             submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_SURFACE_UPDATE))
         } catch (e: Exception) {
-            submitErrorEvent(HoHoMessage.obtain(what = OnErrorEventListener.ERROR_EVENT_RENDER, extra = hashMapOf(
-                    "errorMessage" to e.message,
-                    "causeMessage" to e.cause?.message.orEmpty()
-            )))
+            submitErrorEvent(
+                HoHoMessage.obtain(
+                    what = OnErrorEventListener.ERROR_EVENT_RENDER, extra = hashMapOf(
+                        "errorMessage" to e.message,
+                        "causeMessage" to e.cause?.message.orEmpty()
+                    )
+                )
+            )
         }
     }
 
@@ -344,10 +386,14 @@ class IjkPlayer : BasePlayer() {
         updateStatus(IPlayer.STATE_PREPARED)
         mVideoWidth = mp.videoWidth
         mVideoHeight = mp.videoHeight
-        submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_PREPARED, extra = hashMapOf(
-                "videoWidth" to mVideoWidth,
-                "videoHeight" to mVideoHeight
-        )))
+        submitPlayerEvent(
+            HoHoMessage.obtain(
+                what = OnPlayerEventListener.PLAYER_EVENT_ON_PREPARED, extra = hashMapOf(
+                    "videoWidth" to mVideoWidth,
+                    "videoHeight" to mVideoHeight
+                )
+            )
+        )
         val seekToPosition = startSeekPos // mSeekWhenPrepared may be changed after seekTo() call
         if (seekToPosition > 0 && mp.duration > 0) {
             internalPlayer.seekTo(seekToPosition.toLong())
@@ -370,14 +416,20 @@ class IjkPlayer : BasePlayer() {
 
     private var mVideoHeight = 0
 
-    private val mSizeChangedListener = IMediaPlayer.OnVideoSizeChangedListener { mp, width, height, sarNum, sarDen ->
-        mVideoWidth = mp.videoWidth
-        mVideoHeight = mp.videoHeight
-        submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_SIZE_CHANGE, extra = hashMapOf(
-                "videoWidth" to mVideoWidth, "videoHeight" to mVideoHeight,
-                "videoSarNum" to sarNum, "videoSarDen" to sarDen
-        )))
-    }
+    private val mSizeChangedListener =
+        IMediaPlayer.OnVideoSizeChangedListener { mp, width, height, sarNum, sarDen ->
+            mVideoWidth = mp.videoWidth
+            mVideoHeight = mp.videoHeight
+            submitPlayerEvent(
+                HoHoMessage.obtain(
+                    what = OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_SIZE_CHANGE,
+                    extra = hashMapOf(
+                        "videoWidth" to mVideoWidth, "videoHeight" to mVideoHeight,
+                        "videoSarNum" to sarNum, "videoSarDen" to sarDen
+                    )
+                )
+            )
+        }
 
     private val mCompletionListener = IMediaPlayer.OnCompletionListener {
         updateStatus(IPlayer.STATE_PLAYBACK_COMPLETE)
@@ -400,10 +452,12 @@ class IjkPlayer : BasePlayer() {
             }
             IMediaPlayer.MEDIA_INFO_BUFFERING_START -> {
                 PlayerLog.d(TAG, "MEDIA_INFO_BUFFERING_START:")
+                isBuffering = true
                 submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_BUFFERING_START))
             }
             IMediaPlayer.MEDIA_INFO_BUFFERING_END -> {
                 PlayerLog.d(TAG, "MEDIA_INFO_BUFFERING_END:")
+                isBuffering = false
                 submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_BUFFERING_END))
             }
             IMediaPlayer.MEDIA_INFO_NETWORK_BANDWIDTH -> {
@@ -434,7 +488,12 @@ class IjkPlayer : BasePlayer() {
             }
             IMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED -> {
                 PlayerLog.d(TAG, "MEDIA_INFO_VIDEO_ROTATION_CHANGED: $arg2")
-                submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_ROTATION_CHANGED, argInt = arg2))
+                submitPlayerEvent(
+                    HoHoMessage.obtain(
+                        what = OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_ROTATION_CHANGED,
+                        argInt = arg2
+                    )
+                )
             }
             IMediaPlayer.MEDIA_INFO_AUDIO_RENDERING_START -> {
                 PlayerLog.d(TAG, "MEDIA_INFO_AUDIO_RENDERING_START:")
@@ -471,7 +530,8 @@ class IjkPlayer : BasePlayer() {
         true
     }
 
-    private val mBufferingUpdateListener = IMediaPlayer.OnBufferingUpdateListener { mp, percent -> submitBufferingUpdate(percent) }
+    private val mBufferingUpdateListener =
+        IMediaPlayer.OnBufferingUpdateListener { mp, percent -> submitBufferingUpdate(percent) }
 
     class IjkOption(val category: Int, val key: String, val value: Long)
 }

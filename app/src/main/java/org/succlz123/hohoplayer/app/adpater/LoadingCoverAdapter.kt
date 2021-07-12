@@ -25,7 +25,7 @@ class LoadingCoverAdapter(context: Context) : BaseCoverAdapter(context) {
         super.onCoverAttachedToWindow()
         hostBridge?.getPlayer()?.let {
             if (it.isInPlaybackState()) {
-                setLoadingState(!it.isPlaying())
+                setLoadingState(it.isBuffering())
             }
         }
     }
@@ -53,10 +53,12 @@ class LoadingCoverAdapter(context: Context) : BaseCoverAdapter(context) {
     }
 
     private fun setLoadingState(show: Boolean) {
-        setCoverVisibility(if (show) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        })
+        setCoverVisibility(
+            if (show) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        )
     }
 }

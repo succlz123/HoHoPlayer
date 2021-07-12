@@ -371,6 +371,10 @@ class ExoMediaPlayer : BasePlayer() {
         }
     }
 
+    override fun isBuffering(): Boolean {
+        return isBuffering
+    }
+
     override fun getCurrentPosition(): Int {
         return internalPlayer.currentPosition.toInt()
     }

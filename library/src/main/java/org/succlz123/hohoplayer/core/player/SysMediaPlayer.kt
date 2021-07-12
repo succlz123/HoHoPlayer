@@ -35,6 +35,8 @@ class SysMediaPlayer : BasePlayer() {
 
     private var curDataSource: DataSource? = null
 
+    private var isBuffering: Boolean = false
+
     override fun setDataSource(dataSource: DataSource) {
         try {
             stop()
@@ -68,15 +70,15 @@ class SysMediaPlayer : BasePlayer() {
                 }
             } else if (!TextUtils.isEmpty(assetsPath)) {
                 val fileDescriptor = getAssetsFileDescriptor(
-                        applicationContext, dataSource.assetsPath
+                    applicationContext, dataSource.assetsPath
                 )
                 if (fileDescriptor != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         mediaPlayer.setDataSource(fileDescriptor)
                     } else {
                         mediaPlayer.setDataSource(
-                                fileDescriptor.fileDescriptor,
-                                fileDescriptor.startOffset, fileDescriptor.length
+                            fileDescriptor.fileDescriptor,
+                            fileDescriptor.startOffset, fileDescriptor.length
                         )
                     }
                 }
@@ -91,7 +93,12 @@ class SysMediaPlayer : BasePlayer() {
             // set looping indicator for MediaPlayer
             mediaPlayer.isLooping = isLooping()
 
-            submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_DATA_SOURCE_SET, argObj = dataSource))
+            submitPlayerEvent(
+                HoHoMessage.obtain(
+                    what = OnPlayerEventListener.PLAYER_EVENT_ON_DATA_SOURCE_SET,
+                    argObj = dataSource
+                )
+            )
         } catch (e: Exception) {
             e.printStackTrace()
             updateStatus(IPlayer.STATE_ERROR)
@@ -153,9 +160,9 @@ class SysMediaPlayer : BasePlayer() {
             }
         } catch (e: Exception) {
             e(
-                    TAG,
-                    "IllegalStateException，if the internal player engine has not been initialized " +
-                            "or has been released."
+                TAG,
+                "IllegalStateException，if the internal player engine has not been initialized " +
+                        "or has been released."
             )
         }
     }
@@ -173,11 +180,15 @@ class SysMediaPlayer : BasePlayer() {
         }
     }
 
+    override fun isBuffering(): Boolean {
+        return isBuffering
+    }
+
     override fun getCurrentPosition(): Int {
         return if ((getState() == IPlayer.STATE_PREPARED
-                        || getState() == IPlayer.STATE_STARTED
-                        || getState() == IPlayer.STATE_PAUSED
-                        || getState() == IPlayer.STATE_PLAYBACK_COMPLETE)
+                    || getState() == IPlayer.STATE_STARTED
+                    || getState() == IPlayer.STATE_PAUSED
+                    || getState() == IPlayer.STATE_PLAYBACK_COMPLETE)
         ) {
             mediaPlayer.currentPosition
         } else {
@@ -187,8 +198,8 @@ class SysMediaPlayer : BasePlayer() {
 
     override fun getDuration(): Int {
         return if (getState() != IPlayer.STATE_ERROR
-                && getState() != IPlayer.STATE_INITIALIZED
-                && getState() != IPlayer.STATE_IDLE
+            && getState() != IPlayer.STATE_INITIALIZED
+            && getState() != IPlayer.STATE_IDLE
         ) {
             mediaPlayer.duration
         } else {
@@ -211,8 +222,8 @@ class SysMediaPlayer : BasePlayer() {
     override fun start() {
         try {
             if (getState() == IPlayer.STATE_PREPARED ||
-                    getState() == IPlayer.STATE_PAUSED ||
-                    getState() == IPlayer.STATE_PLAYBACK_COMPLETE
+                getState() == IPlayer.STATE_PAUSED ||
+                getState() == IPlayer.STATE_PLAYBACK_COMPLETE
             ) {
                 mediaPlayer.start()
                 updateStatus(IPlayer.STATE_STARTED)
@@ -240,11 +251,11 @@ class SysMediaPlayer : BasePlayer() {
         try {
             val state = getState()
             if (state != IPlayer.STATE_END
-                    && state != IPlayer.STATE_ERROR
-                    && state != IPlayer.STATE_IDLE
-                    && state != IPlayer.STATE_INITIALIZED
-                    && state != IPlayer.STATE_PAUSED
-                    && state != IPlayer.STATE_STOPPED
+                && state != IPlayer.STATE_ERROR
+                && state != IPlayer.STATE_IDLE
+                && state != IPlayer.STATE_INITIALIZED
+                && state != IPlayer.STATE_PAUSED
+                && state != IPlayer.STATE_STOPPED
             ) {
                 mediaPlayer.pause()
                 updateStatus(IPlayer.STATE_PAUSED)
@@ -271,21 +282,27 @@ class SysMediaPlayer : BasePlayer() {
 
     override fun seekTo(msc: Int) {
         if (getState() == IPlayer.STATE_PREPARED
-                || getState() == IPlayer.STATE_STARTED
-                || getState() == IPlayer.STATE_PAUSED
-                || getState() == IPlayer.STATE_PLAYBACK_COMPLETE
+            || getState() == IPlayer.STATE_STARTED
+            || getState() == IPlayer.STATE_PAUSED
+            || getState() == IPlayer.STATE_PLAYBACK_COMPLETE
         ) {
             mediaPlayer.seekTo(msc)
-            submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_SEEK_TO, argInt = msc))
+            submitPlayerEvent(
+                HoHoMessage.obtain(
+                    what = OnPlayerEventListener.PLAYER_EVENT_ON_SEEK_TO,
+                    argInt = msc
+                )
+            )
         }
     }
 
     override fun stop() {
+        isBuffering = false
         try {
             if (getState() == IPlayer.STATE_PREPARED
-                    || getState() == IPlayer.STATE_STARTED
-                    || getState() == IPlayer.STATE_PAUSED
-                    || getState() == IPlayer.STATE_PLAYBACK_COMPLETE
+                || getState() == IPlayer.STATE_STARTED
+                || getState() == IPlayer.STATE_PAUSED
+                || getState() == IPlayer.STATE_PLAYBACK_COMPLETE
             ) {
                 mediaPlayer.stop()
                 updateStatus(IPlayer.STATE_STOPPED)
@@ -305,6 +322,7 @@ class SysMediaPlayer : BasePlayer() {
     }
 
     override fun destroy() {
+        isBuffering = false
         updateStatus(IPlayer.STATE_END)
         resetListener()
         mediaPlayer.release()
@@ -331,9 +349,13 @@ class SysMediaPlayer : BasePlayer() {
         updateStatus(IPlayer.STATE_PREPARED)
         videoWidth = mp.videoWidth
         videoHeight = mp.videoHeight
-        submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_PREPARED, extra = hashMapOf(
-                "videoWidth" to videoWidth, "videoHeight" to videoHeight
-        )))
+        submitPlayerEvent(
+            HoHoMessage.obtain(
+                what = OnPlayerEventListener.PLAYER_EVENT_ON_PREPARED, extra = hashMapOf(
+                    "videoWidth" to videoWidth, "videoHeight" to videoHeight
+                )
+            )
+        )
 
         val seekToPosition = startSeekPos // mSeekWhenPrepared may be changed after seekTo() call
         if (seekToPosition > 0 && mp.duration > 0) {
@@ -386,9 +408,13 @@ class SysMediaPlayer : BasePlayer() {
     var sizeChangedListener = MediaPlayer.OnVideoSizeChangedListener { mp, width, height ->
         videoWidth = mp.videoWidth
         videoHeight = mp.videoHeight
-        submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_SIZE_CHANGE, extra = hashMapOf(
-                "videoWidth" to videoWidth, "videoHeight" to videoHeight
-        )))
+        submitPlayerEvent(
+            HoHoMessage.obtain(
+                what = OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_SIZE_CHANGE, extra = hashMapOf(
+                    "videoWidth" to videoWidth, "videoHeight" to videoHeight
+                )
+            )
+        )
     }
 
     private val completionListener = MediaPlayer.OnCompletionListener {
@@ -414,11 +440,23 @@ class SysMediaPlayer : BasePlayer() {
             }
             MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
                 d(TAG, "MEDIA_INFO_BUFFERING_START:$arg2")
-                submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_BUFFERING_START, argLong = bandWidth))
+                isBuffering = true
+                submitPlayerEvent(
+                    HoHoMessage.obtain(
+                        what = OnPlayerEventListener.PLAYER_EVENT_ON_BUFFERING_START,
+                        argLong = bandWidth
+                    )
+                )
             }
             MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
                 d(TAG, "MEDIA_INFO_BUFFERING_END:$arg2")
-                submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_BUFFERING_END, argLong = bandWidth))
+                isBuffering = false
+                submitPlayerEvent(
+                    HoHoMessage.obtain(
+                        what = OnPlayerEventListener.PLAYER_EVENT_ON_BUFFERING_END,
+                        argLong = bandWidth
+                    )
+                )
             }
             MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING -> {
                 d(TAG, "MEDIA_INFO_BAD_INTERLEAVING:")

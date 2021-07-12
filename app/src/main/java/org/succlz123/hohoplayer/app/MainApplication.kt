@@ -19,7 +19,7 @@ class MainApplication : Application() {
         instance = this
 
         PlayerLog.LOG_OPEN = true
-        PlayerConfig.init(this, true)
+        PlayerConfig.init(this, true, 256 * 1024 * 1024)
         IjkPlayer.addThis(true)
 //        ExoMediaPlayer.addThis(false)
         PlayerConfig.isUseDefaultNetworkEventProducer = true
