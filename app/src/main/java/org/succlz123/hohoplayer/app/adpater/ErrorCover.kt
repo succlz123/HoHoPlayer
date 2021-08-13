@@ -1,5 +1,6 @@
 package org.succlz123.hohoplayer.app.adpater
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.widget.TextView
@@ -15,7 +16,7 @@ import org.succlz123.hohoplayer.support.network.NetworkConst
 import org.succlz123.hohoplayer.support.network.NetworkProducer.Companion.KEY_NETWORK_STATE
 import org.succlz123.hohoplayer.support.network.NetworkUtils
 
-class ErrorCover(val context: Context) : BaseCoverAdapter(context) {
+class ErrorCover(val context: Activity) : BaseCoverAdapter(context) {
 
     companion object {
         const val STATUS_ERROR = -1

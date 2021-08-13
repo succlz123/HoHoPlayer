@@ -29,13 +29,14 @@ import org.succlz123.hohoplayer.support.log.PlayerLog.d
 import org.succlz123.hohoplayer.support.log.PlayerLog.e
 import org.succlz123.hohoplayer.support.message.HoHoMessage
 import org.succlz123.hohoplayer.support.network.NetworkProducer
+import org.succlz123.hohoplayer.support.utils.ViewKtx.getActivity
 
 open class VideoView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr),
-        IVideoView, IStyleSetter {
+    IVideoView, IStyleSetter {
 
     companion object {
         const val TAG = "VideoView"
@@ -75,10 +76,11 @@ open class VideoView @JvmOverloads constructor(
                         videoHeight = message.getIntFromExtra("videoHeight", 0)
                         videoSarNum = message.getIntFromExtra("videoSarNum", 0)
                         videoSarDen = message.getIntFromExtra("videoSarDen", 0)
-                        d(TAG, "onVideoSizeChange : videoWidth = " + videoWidth
-                                + ", videoHeight = " + videoHeight
-                                + ", videoSarNum = " + videoSarNum
-                                + ", videoSarDen = " + videoSarDen
+                        d(
+                            TAG, "onVideoSizeChange : videoWidth = " + videoWidth
+                                    + ", videoHeight = " + videoHeight
+                                    + ", videoSarNum = " + videoSarNum
+                                    + ", videoSarDen = " + videoSarDen
                         )
                         render?.updateVideoSize(videoWidth, videoHeight)
                         render?.setVideoSampleAspectRatio(videoSarNum, videoSarDen)
@@ -122,18 +124,20 @@ open class VideoView @JvmOverloads constructor(
             }
         }
         addView(
-                playerContainer,
-                ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                )
+            playerContainer,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         )
     }
 
     protected fun onCreatePlayerContainer(context: Context): PlayerContainer {
         val superContainer = PlayerContainer(context)
         if (isUseDefaultNetworkEventProducer) {
-            superContainer.producerGroup.addEventProducer(NetworkProducer(context))
+            context.getActivity()?.let { activityInstance ->
+                superContainer.producerGroup.addEventProducer(NetworkProducer(activityInstance))
+            }
         }
         return superContainer
     }
@@ -204,10 +208,10 @@ open class VideoView @JvmOverloads constructor(
         }
 
         override fun onSurfaceChanged(
-                renderHolder: IRenderHolder,
-                format: Int,
-                width: Int,
-                height: Int
+            renderHolder: IRenderHolder,
+            format: Int,
+            width: Int,
+            height: Int
         ) {
         }
 

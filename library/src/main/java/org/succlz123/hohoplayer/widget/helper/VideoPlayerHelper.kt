@@ -24,6 +24,7 @@ import org.succlz123.hohoplayer.core.source.DataSource
 import org.succlz123.hohoplayer.support.log.PlayerLog.d
 import org.succlz123.hohoplayer.support.message.HoHoMessage
 import org.succlz123.hohoplayer.support.network.NetworkProducer
+import org.succlz123.hohoplayer.support.utils.ViewKtx.getActivity
 import org.succlz123.hohoplayer.widget.videoview.VideoView
 
 class VideoPlayerHelper(private var context: Context) : IPlayerHelper {
@@ -73,7 +74,9 @@ class VideoPlayerHelper(private var context: Context) : IPlayerHelper {
 
     init {
         if (isUseDefaultNetworkEventProducer) {
-            playerContainer.producerGroup.addEventProducer(NetworkProducer(context))
+            context.getActivity()?.let { activityInstance ->
+                playerContainer.producerGroup.addEventProducer(NetworkProducer(activityInstance))
+            }
         }
     }
 
@@ -119,10 +122,11 @@ class VideoPlayerHelper(private var context: Context) : IPlayerHelper {
                 videoHeight = message.getIntFromExtra("videoHeight", 0)
                 videoSarNum = message.getIntFromExtra("videoSarNum", 0)
                 videoSarDen = message.getIntFromExtra("videoSarDen", 0)
-                d(VideoView.TAG, "onVideoSizeChange : videoWidth = " + videoWidth
-                        + ", videoHeight = " + videoHeight
-                        + ", videoSarNum = " + videoSarNum
-                        + ", videoSarDen = " + videoSarDen
+                d(
+                    VideoView.TAG, "onVideoSizeChange : videoWidth = " + videoWidth
+                            + ", videoHeight = " + videoHeight
+                            + ", videoSarNum = " + videoSarNum
+                            + ", videoSarDen = " + videoSarDen
                 )
                 render?.updateVideoSize(videoWidth, videoHeight)
                 render?.setVideoSampleAspectRatio(videoSarNum, videoSarDen)
@@ -167,11 +171,11 @@ class VideoPlayerHelper(private var context: Context) : IPlayerHelper {
             updateRender()
         }
         userContainer.addView(
-                playerContainer,
-                ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                )
+            playerContainer,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         )
     }
 
@@ -228,10 +232,10 @@ class VideoPlayerHelper(private var context: Context) : IPlayerHelper {
         }
 
         override fun onSurfaceChanged(
-                renderHolder: IRenderHolder,
-                format: Int,
-                width: Int,
-                height: Int
+            renderHolder: IRenderHolder,
+            format: Int,
+            width: Int,
+            height: Int
         ) {
         }
 

@@ -1,5 +1,6 @@
 package org.succlz123.hohoplayer.support.network
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,7 +14,7 @@ import org.succlz123.hohoplayer.support.message.HoHoMessage
 import org.succlz123.hohoplayer.support.log.PlayerLog.d
 import java.lang.ref.WeakReference
 
-class NetworkProducer(context: Context) : AbsProducer() {
+class NetworkProducer(val context: Activity) : AbsProducer() {
 
     companion object {
         private const val TAG = "NetworkEventProducer"
@@ -38,7 +39,12 @@ class NetworkProducer(context: Context) : AbsProducer() {
                         return
                     }
                     this@NetworkProducer.state = state
-                    sender?.sendEvent(HoHoMessage.obtain(what = KEY_NETWORK_STATE, argInt = this@NetworkProducer.state))
+                    sender?.sendEvent(
+                        HoHoMessage.obtain(
+                            what = KEY_NETWORK_STATE,
+                            argInt = this@NetworkProducer.state
+                        )
+                    )
                     d(TAG, "onNetworkChange : ${this@NetworkProducer.state}")
                 }
             }
@@ -46,7 +52,7 @@ class NetworkProducer(context: Context) : AbsProducer() {
     }
 
     override fun onAdded() {
-        state = NetworkUtils.getNetworkState(appContext)
+        state = NetworkUtils.getNetworkState(context)
         registerNetChangeReceiver()
     }
 
@@ -62,11 +68,7 @@ class NetworkProducer(context: Context) : AbsProducer() {
 
     private fun registerNetChangeReceiver() {
         unregisterNetChangeReceiver()
-        broadcastReceiver =
-                NetChangeBroadcastReceiver(
-                        appContext,
-                        handler
-                )
+        broadcastReceiver = NetChangeBroadcastReceiver(context, handler)
         val intentFilter = IntentFilter()
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
         appContext.registerReceiver(broadcastReceiver, intentFilter)
@@ -82,7 +84,8 @@ class NetworkProducer(context: Context) : AbsProducer() {
         }
     }
 
-    class NetChangeBroadcastReceiver(context: Context?, private val handler: Handler) : BroadcastReceiver() {
+    class NetChangeBroadcastReceiver(context: Activity?, private val handler: Handler) :
+        BroadcastReceiver() {
         private val contextRefer = WeakReference(context)
 
         override fun onReceive(context: Context, intent: Intent) {
@@ -98,7 +101,7 @@ class NetworkProducer(context: Context) : AbsProducer() {
                 val networkState = NetworkUtils.getNetworkState(it)
                 val message = Message.obtain()
                 message.what =
-                        MSG_CODE_NETWORK_CHANGE
+                    MSG_CODE_NETWORK_CHANGE
                 message.obj = networkState
                 handler.sendMessage(message)
             }
