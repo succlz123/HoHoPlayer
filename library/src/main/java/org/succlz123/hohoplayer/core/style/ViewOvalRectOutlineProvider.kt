@@ -11,20 +11,18 @@ import android.view.ViewOutlineProvider
 class ViewOvalRectOutlineProvider(private val rect: Rect?) : ViewOutlineProvider() {
 
     override fun getOutline(view: View, outline: Outline) {
-        val selfRect: Rect
-        selfRect = if (rect != null) {
-            rect
-        } else {
-            val rect = Rect()
-            view.getGlobalVisibleRect(rect)
-            rect.getOvalRect()
+        (rect ?: Rect().run {
+            view.getGlobalVisibleRect(this)
+            getOvalRect(this)
+        }).let {
+            outline.setOval(it)
         }
-        outline.setOval(selfRect)
     }
 
-    private fun Rect.getOvalRect(): Rect {
-        val width = right - left
-        val height = bottom - top
+    private fun getOvalRect(re: Rect): Rect {
+        val width = re.right - re.left
+        val height = re.bottom - re.top
+
         val left: Int
         val top: Int
         val right: Int

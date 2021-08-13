@@ -8,31 +8,12 @@ import android.view.View
 import android.view.ViewOutlineProvider
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class ViewRoundRectOutlineProvider : ViewOutlineProvider {
-    private var radius: Float
-    private var rect: Rect? = null
-
-    constructor(radius: Float) {
-        this.radius = radius
-    }
-
-    constructor(radius: Float, rect: Rect?) {
-        this.radius = radius
-        this.rect = rect
-    }
+class ViewRoundRectOutlineProvider(val radius: Float,val rect: Rect?) : ViewOutlineProvider() {
 
     override fun getOutline(view: View, outline: Outline) {
-        val selfRect = if (rect != null) {
-            rect
-        } else {
-            val rect = Rect()
-            view.getGlobalVisibleRect(rect)
-            val leftMargin = 0
-            val topMargin = 0
-            Rect(leftMargin, topMargin,
-                    rect.right - rect.left - leftMargin, rect.bottom - rect.top - topMargin)
-        }
-        selfRect?.let {
+        (rect ?: Rect().apply {
+            view.getDrawingRect(this)
+        }).let {
             outline.setRoundRect(it, radius)
         }
     }

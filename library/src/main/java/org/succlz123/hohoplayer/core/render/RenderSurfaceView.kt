@@ -89,13 +89,14 @@ class RenderSurfaceView @JvmOverloads constructor(context: Context?, attrs: Attr
         private val mSurfaceHolder: WeakReference<SurfaceHolder?> = WeakReference(surfaceHolder)
 
         override fun bindPlayer(player: IPlayer) {
-            if (player != null && mSurfaceHolder.get() != null) {
+            if (mSurfaceHolder.get() != null) {
                 player.setDisplay(mSurfaceHolder.get())
             }
         }
     }
 
     private inner class InternalSurfaceHolderCallback : SurfaceHolder.Callback {
+
         override fun surfaceCreated(holder: SurfaceHolder) {
             d(TAG, "<---surfaceCreated---->")
             mRenderCallback?.onSurfaceCreated(
