@@ -158,16 +158,25 @@ class AVPlayer(decoderName: String = PlayerConfig.getDefaultDecoderName()) : IPl
     }
 
     override fun start() {
-        internalPlayerStart(0)
+        internalPlayerStart()
     }
 
     override fun start(msc: Int) {
         internalPlayerStart(msc)
     }
 
+    fun rePlay() {
+        interPlayerSetDataSource(dataSource)
+        internalPlayerStart()
+    }
+
     fun rePlay(msc: Int) {
         interPlayerSetDataSource(dataSource)
         internalPlayerStart(msc)
+    }
+
+    private fun internalPlayerStart() {
+        basePlayer.start()
     }
 
     private fun internalPlayerStart(msc: Int) {

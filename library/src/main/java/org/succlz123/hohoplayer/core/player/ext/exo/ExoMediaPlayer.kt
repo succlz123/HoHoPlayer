@@ -56,8 +56,6 @@ class ExoMediaPlayer : BasePlayer() {
 
     private var videoHeight = 0
 
-    private var startPos = -1L
-
     private var isPreparing = true
 
     private var isBuffering = false
@@ -96,11 +94,6 @@ class ExoMediaPlayer : BasePlayer() {
                                 "videoWidth" to (format?.width
                                         ?: -1), "videoHeight" to (format?.height ?: -1)
                         )))
-
-                        if (startPos > 0 && internalPlayer.duration > 0) {
-                            internalPlayer.seekTo(startPos)
-                            startPos = -1
-                        }
                     }
                 }
             }
@@ -285,19 +278,16 @@ class ExoMediaPlayer : BasePlayer() {
         // Handle timed text source
         val timedTextSource = dataSource.timedTextSource
         if (timedTextSource != null) {
-            val format = Format.createTextSampleFormat(
-                    null,
-                    timedTextSource.mimeType,
-                    timedTextSource.flag,
-                    null
-            )
+            val subtitle = MediaItem.Subtitle(
+                    Uri.parse(timedTextSource.path), timedTextSource.mimeType.orEmpty(), null, timedTextSource.flag)
             val timedTextMediaSource =
                     SingleSampleMediaSource.Factory(DefaultDataSourceFactory(appContext, userAgent))
-                            .createMediaSource(Uri.parse(timedTextSource.path), format, C.TIME_UNSET)
+                            .createMediaSource(subtitle, C.TIME_UNSET)
             // Merge MediaSource and timedTextMediaSource.
             mediaSource = MergingMediaSource(mediaSource, timedTextMediaSource)
         }
-        internalPlayer.prepare(mediaSource)
+        internalPlayer.setMediaSource(mediaSource)
+        internalPlayer.prepare()
         internalPlayer.playWhenReady = false
 
         submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_DATA_SOURCE_SET, argObj = dataSource))
@@ -400,11 +390,16 @@ class ExoMediaPlayer : BasePlayer() {
     }
 
     override fun start(msc: Int) {
-        if (getState() == STATE_PREPARED && msc > 0) {
-            start()
-            seekTo(msc)
+        val pos = if (msc < 0) {
+            0
         } else {
-            startPos = msc.toLong()
+            msc
+        }
+        if (getState() == STATE_PREPARED) {
+            start()
+            seekTo(pos)
+        } else {
+            seekTo(pos)
             start()
         }
     }

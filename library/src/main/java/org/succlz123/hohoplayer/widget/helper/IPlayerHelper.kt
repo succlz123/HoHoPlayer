@@ -35,6 +35,7 @@ interface IPlayerHelper {
     fun setSpeed(speed: Float)
     fun setLooping(looping: Boolean)
     fun play(updateRender: Boolean = false, pos: Int = 0)
+    fun rePlay()
     fun rePlay(msc: Int)
     fun pause()
     fun resume()

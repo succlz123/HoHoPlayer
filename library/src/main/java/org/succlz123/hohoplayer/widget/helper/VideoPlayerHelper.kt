@@ -311,6 +311,10 @@ class VideoPlayerHelper(private var context: Context) : IPlayerHelper {
         return avPlayer.getState()
     }
 
+    override fun rePlay() {
+        avPlayer.rePlay()
+    }
+
     override fun rePlay(msc: Int) {
         avPlayer.rePlay(msc)
     }

@@ -181,6 +181,10 @@ open class VideoView @JvmOverloads constructor(
         renderHolder?.bindPlayer(avPlayer)
     }
 
+    fun rePlay() {
+        avPlayer.rePlay()
+    }
+
     fun rePlay(msc: Int) {
         avPlayer.rePlay(msc)
     }
