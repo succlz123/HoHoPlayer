@@ -19,7 +19,6 @@ interface OnErrorEventListener {
         const val ERROR_EVENT_MALFORMED = -88016
         const val ERROR_EVENT_UNSUPPORTED = -88017
         const val ERROR_EVENT_TIMED_OUT = -88018
-        const val ERROR_EVENT_OUT_OF_MEMORY = -88019
         const val ERROR_EVENT_REMOTE = -88020
     }
 }

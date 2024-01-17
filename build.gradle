@@ -1,22 +1,26 @@
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.8.21'
     repositories {
         google()
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
         maven { url "https://jitpack.io" }
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
 
+plugins {
+    id 'com.google.devtools.ksp' version '1.8.21-1.0.11' apply false
+}
+
 allprojects {
     repositories {
         google()
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
         maven { url "https://jitpack.io" }
         mavenCentral()
     }

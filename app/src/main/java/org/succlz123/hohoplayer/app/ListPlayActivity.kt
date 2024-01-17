@@ -5,14 +5,14 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_list.*
+import org.succlz123.hohoplayer.app.databinding.ActivityListBinding
 import org.succlz123.hohoplayer.ui.list.ListPlayer
 import org.succlz123.hohoplayer.app.support.DataProvider
 import org.succlz123.hohoplayer.app.support.OrientationSensor
 
 class RecyclerViewPlayActivity : AppCompatActivity() {
     private lateinit var listAdapter: ListAdapter
-
+    private lateinit var binding: ActivityListBinding
     private lateinit var orientationSensor: OrientationSensor
 
     private var isLandScape = false
@@ -21,15 +21,16 @@ class RecyclerViewPlayActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_list)
+        binding = ActivityListBinding.inflate(layoutInflater, null, false)
+        setContentView(binding.root)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         listAdapter = ListAdapter(listPlayer, DataProvider.videoList)
-        recycler.adapter = listAdapter
+        binding.recycler.adapter = listAdapter
 
         listPlayer.bindLifecycleOwner(this)
-        listPlayer.bindRecyclerView(recycler)
+        listPlayer.bindRecyclerView(binding.recycler)
 
         orientationSensor = OrientationSensor(this, onOrientationListener)
         orientationSensor.enable()

@@ -15,11 +15,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_base_video_view.*
 import org.succlz123.hohoplayer.app.adpater.CompleteCoverAdapter
 import org.succlz123.hohoplayer.app.adpater.ControllerCoverAdapter
 import org.succlz123.hohoplayer.app.adpater.ErrorCover
 import org.succlz123.hohoplayer.app.adpater.LoadingCoverAdapter
+import org.succlz123.hohoplayer.app.databinding.ActivityBaseVideoViewBinding
 import org.succlz123.hohoplayer.app.support.AppPlayerData
 import org.succlz123.hohoplayer.app.support.DataProvider
 import org.succlz123.hohoplayer.app.support.OnItemClickListener
@@ -38,9 +38,9 @@ import org.succlz123.hohoplayer.core.source.DataSource
 import org.succlz123.hohoplayer.support.message.HoHoMessage
 import org.succlz123.hohoplayer.widget.videoview.VideoView
 import org.succlz123.hohoplayer.widget.videoview.VideoViewAdapterEventHandler
-import java.util.*
 
 class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAdapter.SettingItemHolder, SettingItem> {
+    private lateinit var binding: ActivityBaseVideoViewBinding
     private lateinit var bridge: Bridge
     private var userPause = false
     private var isLandscape = false
@@ -50,8 +50,8 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_base_video_view)
-
+        binding = ActivityBaseVideoViewBinding.inflate(layoutInflater, null, false)
+        setContentView(binding.root)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         updateVideo(false)
@@ -65,17 +65,17 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
 
         bridge.getDataCenter().putObject(AppPlayerData.Key.KEY_CONTROLLER_TOP_ENABLE, true)
 
-        baseVideoView.setBridge(bridge)
-        baseVideoView.videoViewEventHandler = videoViewEventHandler
-        baseVideoView.onPlayerEventListener = playerEventListener
+        binding.baseVideoView.setBridge(bridge)
+        binding.baseVideoView.videoViewEventHandler = videoViewEventHandler
+        binding.baseVideoView.onPlayerEventListener = playerEventListener
     }
 
     private fun initPlayAfterResume() {
         if (!hasStart) {
             val dataSource = DataSource(DataProvider.VIDEO_URL_08)
             dataSource.title = "音乐和艺术如何改变世界"
-            baseVideoView.setDataSource(dataSource)
-            baseVideoView.start()
+            binding.baseVideoView.setDataSource(dataSource)
+            binding.baseVideoView.start()
             hasStart = true
         }
     }
@@ -84,10 +84,10 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
         override fun onPlayerEvent(message: HoHoMessage) {
             when (message.what) {
                 OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_RENDER_START -> if (adapter == null) {
-                    settingRecycler.layoutManager = LinearLayoutManager(this@BaseVideoViewActivity, LinearLayoutManager.VERTICAL, false)
+                    binding.settingRecycler.layoutManager = LinearLayoutManager(this@BaseVideoViewActivity, LinearLayoutManager.VERTICAL, false)
                     adapter = SettingAdapter(this@BaseVideoViewActivity, SettingItem.initSettingList()).apply {
                         onItemClickListener = this@BaseVideoViewActivity
-                        settingRecycler.adapter = this
+                        binding.settingRecycler.adapter = this
                     }
                 }
             }
@@ -113,7 +113,7 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
                     }
                 }
                 AppPlayerData.Event.EVENT_CODE_ERROR_SHOW -> {
-                    baseVideoView.stop()
+                    binding.baseVideoView.stop()
                 }
             }
         }
@@ -126,71 +126,71 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
     }
 
     private fun replay() {
-        baseVideoView.setDataSource(DataSource(DataProvider.VIDEO_URL_07))
-        baseVideoView.start()
+        binding.baseVideoView.setDataSource(DataSource(DataProvider.VIDEO_URL_07))
+        binding.baseVideoView.start()
     }
 
     override fun onItemClick(holder: SettingAdapter.SettingItemHolder, item: SettingItem, position: Int) {
         when (item.code) {
             SettingItem.CODE_RENDER_SURFACE_VIEW -> {
-                baseVideoView.setRenderType(IRender.RENDER_TYPE_SURFACE_VIEW, false)
+                binding.baseVideoView.setRenderType(IRender.RENDER_TYPE_SURFACE_VIEW, false)
             }
             SettingItem.CODE_RENDER_TEXTURE_VIEW -> {
-                baseVideoView.setRenderType(IRender.RENDER_TYPE_TEXTURE_VIEW, false)
+                binding.baseVideoView.setRenderType(IRender.RENDER_TYPE_TEXTURE_VIEW, false)
             }
             SettingItem.CODE_STYLE_ROUND_RECT -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                baseVideoView.setRoundRectShape(dp2px(25f).toFloat())
+                binding.baseVideoView.setRoundRectShape(dp2px(25f).toFloat())
             } else {
                 Toast.makeText(this, "not support", Toast.LENGTH_SHORT).show()
             }
             SettingItem.CODE_STYLE_OVAL_RECT -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                baseVideoView.setOvalRectShape()
+                binding.baseVideoView.setOvalRectShape()
             } else {
                 Toast.makeText(this, "not support", Toast.LENGTH_SHORT).show()
             }
             SettingItem.CODE_STYLE_RESET -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                baseVideoView.clearShapeStyle()
+                binding.baseVideoView.clearShapeStyle()
             } else {
                 Toast.makeText(this, "not support", Toast.LENGTH_SHORT).show()
             }
             SettingItem.CODE_ASPECT_16_9 -> {
-                baseVideoView.setAspectRatio(AspectRatio.AspectRatio_16_9)
+                binding.baseVideoView.setAspectRatio(AspectRatio.AspectRatio_16_9)
             }
             SettingItem.CODE_ASPECT_4_3 -> {
-                baseVideoView.setAspectRatio(AspectRatio.AspectRatio_4_3)
+                binding.baseVideoView.setAspectRatio(AspectRatio.AspectRatio_4_3)
             }
             SettingItem.CODE_ASPECT_FILL -> {
-                baseVideoView.setAspectRatio(AspectRatio.AspectRatio_FILL_PARENT)
+                binding.baseVideoView.setAspectRatio(AspectRatio.AspectRatio_FILL_PARENT)
             }
             SettingItem.CODE_ASPECT_MATCH -> {
-                baseVideoView.setAspectRatio(AspectRatio.AspectRatio_MATCH_PARENT)
+                binding.baseVideoView.setAspectRatio(AspectRatio.AspectRatio_MATCH_PARENT)
             }
             SettingItem.CODE_ASPECT_FIT -> {
-                baseVideoView.setAspectRatio(AspectRatio.AspectRatio_FIT_PARENT)
+                binding.baseVideoView.setAspectRatio(AspectRatio.AspectRatio_FIT_PARENT)
             }
             SettingItem.CODE_ASPECT_ORIGIN -> {
-                baseVideoView.setAspectRatio(AspectRatio.AspectRatio_ORIGIN)
+                binding.baseVideoView.setAspectRatio(AspectRatio.AspectRatio_ORIGIN)
             }
-            SettingItem.CODE_PLAYER_MEDIA_PLAYER -> if (baseVideoView.switchDecoder(SysMediaPlayer.TAG)) {
+            SettingItem.CODE_PLAYER_MEDIA_PLAYER -> if (binding.baseVideoView.switchDecoder(SysMediaPlayer.TAG)) {
                 replay()
             }
-            SettingItem.CODE_PLAYER_EXO_PLAYER -> if (baseVideoView.switchDecoder(ExoMediaPlayer.TAG)) {
+            SettingItem.CODE_PLAYER_EXO_PLAYER -> if (binding.baseVideoView.switchDecoder(ExoMediaPlayer.TAG)) {
                 replay()
             }
             SettingItem.CODE_SPEED_0_5 -> {
-                baseVideoView.setSpeed(0.5f)
+                binding.baseVideoView.setSpeed(0.5f)
             }
             SettingItem.CODE_SPEED_2 -> {
-                baseVideoView.setSpeed(2f)
+                binding.baseVideoView.setSpeed(2f)
             }
             SettingItem.CODE_SPEED_1 -> {
-                baseVideoView.setSpeed(1f)
+                binding.baseVideoView.setSpeed(1f)
             }
             SettingItem.CODE_VOLUME_SILENT -> {
-                baseVideoView.setVolume(0f, 0f)
+                binding.baseVideoView.setVolume(0f, 0f)
             }
             SettingItem.CODE_VOLUME_RESET -> {
-                baseVideoView.setVolume(1f, 1f)
+                binding.baseVideoView.setVolume(1f, 1f)
             }
             SettingItem.CODE_CONTROLLER_REMOVE -> {
                 bridge.removeAdapter(ControllerCoverAdapter.TAG)
@@ -203,13 +203,13 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
                     Toast.makeText(this, "已添加", Toast.LENGTH_SHORT).show()
                 }
             }
-            SettingItem.CODE_TEST_UPDATE_RENDER -> baseVideoView.refreshRender()
+            SettingItem.CODE_TEST_UPDATE_RENDER -> binding.baseVideoView.refreshRender()
         }
     }
 
     private fun updateVideo(landscape: Boolean) {
         val margin = dp2px(2f)
-        val layoutParams = baseVideoView.layoutParams as LinearLayout.LayoutParams
+        val layoutParams = binding.baseVideoView.layoutParams as LinearLayout.LayoutParams
         if (landscape) {
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
@@ -219,7 +219,7 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
             layoutParams.height = layoutParams.width * 3 / 4
             layoutParams.setMargins(margin, margin, margin, margin)
         }
-        baseVideoView.layoutParams = layoutParams
+        binding.baseVideoView.layoutParams = layoutParams
     }
 
     override fun onBackPressed() {
@@ -244,34 +244,34 @@ class BaseVideoViewActivity : AppCompatActivity(), OnItemClickListener<SettingAd
 
     override fun onPause() {
         super.onPause()
-        val state = baseVideoView.getState()
+        val state = binding.baseVideoView.getState()
         if (state == IPlayer.STATE_PLAYBACK_COMPLETE) {
             return
         }
-        if (baseVideoView.isInPlaybackState()) {
-            baseVideoView.pause()
+        if (binding.baseVideoView.isInPlaybackState()) {
+            binding.baseVideoView.pause()
         } else {
-            baseVideoView.stop()
+            binding.baseVideoView.stop()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        val state = baseVideoView.getState()
+        val state = binding.baseVideoView.getState()
         if (state == IPlayer.STATE_PLAYBACK_COMPLETE) {
             return
         }
-        if (baseVideoView.isInPlaybackState()) {
-            if (!userPause) baseVideoView.resume()
+        if (binding.baseVideoView.isInPlaybackState()) {
+            if (!userPause) binding.baseVideoView.resume()
         } else {
-            baseVideoView.rePlay(0)
+            binding.baseVideoView.rePlay(0)
         }
         initPlayAfterResume()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        baseVideoView.stopPlayback()
+        binding.baseVideoView.stopPlayback()
     }
 }
 

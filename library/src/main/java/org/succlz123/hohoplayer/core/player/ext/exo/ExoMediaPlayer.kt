@@ -17,7 +17,7 @@ import com.google.android.exoplayer2.upstream.AssetDataSource.AssetDataSourceExc
 import com.google.android.exoplayer2.upstream.RawResourceDataSource.RawResourceDataSourceException
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
-import com.google.android.exoplayer2.video.VideoListener
+import com.google.android.exoplayer2.video.VideoSize
 import org.succlz123.hohoplayer.config.PlayerConfig
 import org.succlz123.hohoplayer.config.PlayerContext
 import org.succlz123.hohoplayer.core.player.base.BasePlayer
@@ -66,12 +66,9 @@ class ExoMediaPlayer : BasePlayer() {
     private val bandwidthMeter: DefaultBandwidthMeter =
             DefaultBandwidthMeter.Builder(appContext).build()
 
-    private var eventListener: Player.EventListener = object : Player.EventListener {
+    private var eventListener: Player.Listener = object : Player.Listener {
 
-        override fun onTracksChanged(
-                trackGroups: TrackGroupArray,
-                trackSelections: TrackSelectionArray
-        ) {
+        override fun onTracksChanged(tracks: Tracks) {
         }
 
         override fun onLoadingChanged(isLoading: Boolean) {
@@ -153,7 +150,7 @@ class ExoMediaPlayer : BasePlayer() {
 
         override fun onRepeatModeChanged(repeatMode: Int) {}
 
-        override fun onPlayerError(error: ExoPlaybackException) {
+        override fun onPlayerError(error: PlaybackException) {
             val errorMessage = error.message ?: ""
             val causeMessage = error.cause?.message ?: ""
             e(TAG, "$errorMessage, causeMessage = $causeMessage")
@@ -162,26 +159,21 @@ class ExoMediaPlayer : BasePlayer() {
                 put("errorMessage", errorMessage)
                 put("causeMessage", causeMessage)
             }
-            when (error.type) {
-                ExoPlaybackException.TYPE_SOURCE -> {
-                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_IO })
-                }
-                ExoPlaybackException.TYPE_RENDERER -> {
-                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_COMMON })
-                }
-                ExoPlaybackException.TYPE_UNEXPECTED -> {
-                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_UNKNOWN })
-                }
-                ExoPlaybackException.TYPE_OUT_OF_MEMORY -> {
-                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_OUT_OF_MEMORY })
-                }
-                ExoPlaybackException.TYPE_REMOTE -> {
-                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_REMOTE })
-                }
-                ExoPlaybackException.TYPE_TIMEOUT -> {
-                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_TIMED_OUT })
-                }
-            }
+            // FIXME check this is need or not
+//            when (error.type) {
+//                ExoPlaybackException.TYPE_SOURCE -> {
+//                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_IO })
+//                }
+//                ExoPlaybackException.TYPE_RENDERER -> {
+//                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_COMMON })
+//                }
+//                ExoPlaybackException.TYPE_UNEXPECTED -> {
+//                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_UNKNOWN })
+//                }
+//                ExoPlaybackException.TYPE_REMOTE -> {
+//                    submitErrorEvent(message.apply { what = OnErrorEventListener.ERROR_EVENT_REMOTE })
+//                }
+//            }
         }
 
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
@@ -200,7 +192,7 @@ class ExoMediaPlayer : BasePlayer() {
 
     override fun setDataSource(dataSource: DataSource) {
         updateStatus(IPlayer.STATE_INITIALIZED)
-        internalPlayer.addVideoListener(videoListener)
+        internalPlayer.addListener(videoListener)
         curDataSource = dataSource
         val data = dataSource.data
         val uri = dataSource.uri
@@ -260,13 +252,14 @@ class ExoMediaPlayer : BasePlayer() {
                         ignoreCase = true
                 ))
         ) {
-            dataSourceFactory = DefaultHttpDataSourceFactory(
-                    userAgent,
-                    DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-                    DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-                    true
-            )
-            dataSourceFactory.defaultRequestProperties.set(extra)
+            // FIXME this should set
+//            dataSourceFactory = DefaultHttpDataSource.Factory(
+//                    userAgent,
+//                    DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+//                    DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+//                    true
+//            )
+//            dataSourceFactory.defaultRequestProperties.set(extra)
         }
 
         // Prepare the player with the source
@@ -449,7 +442,7 @@ class ExoMediaPlayer : BasePlayer() {
         isBuffering = false
         updateStatus(IPlayer.STATE_END)
         internalPlayer.removeListener(eventListener)
-        internalPlayer.removeVideoListener(videoListener)
+        internalPlayer.removeListener(videoListener)
         internalPlayer.release()
         submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_DESTROY))
     }
@@ -463,13 +456,10 @@ class ExoMediaPlayer : BasePlayer() {
                     && state != IPlayer.STATE_STOPPED
         }
 
-    private val videoListener: VideoListener = object : VideoListener {
-        override fun onVideoSizeChanged(
-                width: Int, height: Int,
-                unappliedRotationDegrees: Int, pixelWidthHeightRatio: Float
-        ) {
-            videoWidth = width
-            videoHeight = height
+    private val videoListener: Player.Listener = object : Player.Listener {
+        override fun onVideoSizeChanged(videoSize: VideoSize) {
+            videoWidth = videoSize.width
+            videoHeight = videoSize.height
             submitPlayerEvent(HoHoMessage.obtain(what = OnPlayerEventListener.PLAYER_EVENT_ON_VIDEO_SIZE_CHANGE, extra = hashMapOf(
                     "videoWidth" to videoWidth, "videoHeight" to videoHeight,
                     "videoSarNum" to 0, "videoSarDen" to 0 // ijk ->
