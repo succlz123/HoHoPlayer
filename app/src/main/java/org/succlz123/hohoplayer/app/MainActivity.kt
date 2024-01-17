@@ -5,15 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import org.succlz123.hohoplayer.app.databinding.ActivityMainBinding
 import org.succlz123.hohoplayer.config.PlayerConfig
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater, null, false)
+        setContentView(binding.root)
+        setSupportActionBar(findViewById(R.id.toolbar))
         updateDecoderInfo()
     }
 
@@ -23,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateDecoderInfo() {
-        tv_info.text = "Current Media Player: ${PlayerConfig.getDefaultDecoderName()}"
+        binding.tvInfo.text = "Current Media Player: ${PlayerConfig.getDefaultDecoderName()}"
     }
 
     fun useBaseVideoView(view: View?) {
